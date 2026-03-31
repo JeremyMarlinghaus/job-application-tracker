@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Jobs</h2>
+<a href="/jobs/add">Add Job</a>
+{% for j in jobs %}
+<p>{{ j.job_title }}</p>
+{% endfor %}
+{% endblock %}

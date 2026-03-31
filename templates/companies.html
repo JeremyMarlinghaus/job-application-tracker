@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Companies</h2>
+<a href="/companies/add">Add Company</a>
+{% for c in companies %}
+<p>{{ c.company_name }}</p>
+{% endfor %}
+{% endblock %}

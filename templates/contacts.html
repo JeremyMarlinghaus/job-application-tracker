@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Contacts</h2>
+<a href="/contacts/add">Add Contact</a>
+{% for c in contacts %}
+<p>{{ c.contact_name }}</p>
+{% endfor %}
+{% endblock %}
