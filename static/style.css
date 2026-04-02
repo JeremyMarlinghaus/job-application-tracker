@@ -341,3 +341,5 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     font-size: 0.78rem; color: #334155;
     border-top: 1px solid #1e2736; background: #161b27;
 }
+
+.stat-info { display: flex; flex-direction: column; }
