@@ -1,8 +1,49 @@
 {% extends "base.html" %}
+{% block title %}Companies – Job Tracker{% endblock %}
 {% block content %}
-<h2>Companies</h2>
-<a href="/companies/add">Add Company</a>
-{% for c in companies %}
-<p>{{ c.company_name }}</p>
-{% endfor %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Companies</h1>
+        <p class="page-subtitle">{{ companies | length }} companies tracked</p>
+    </div>
+    <a href="{{ url_for('add_company') }}" class="btn btn-primary">+ Add Company</a>
+</div>
+
+{% if companies %}
+<div class="table-card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Company Name</th><th>Industry</th><th>Location</th>
+                <th>Website</th><th>Notes</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in companies %}
+            <tr>
+                <td class="td-bold">{{ c.company_name }}</td>
+                <td>{% if c.industry %}<span class="tag">{{ c.industry }}</span>{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                <td>{% if c.city or c.state %}{{ c.city }}{% if c.city and c.state %}, {% endif %}{{ c.state }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                <td>{% if c.website %}<a href="{{ c.website if c.website.startswith('http') else 'https://' + c.website }}" target="_blank" class="link">Visit</a>{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                <td class="td-notes">{{ c.notes or '—' }}</td>
+                <td class="td-actions">
+                    <a href="{{ url_for('edit_company', company_id=c.company_id) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <form method="POST" action="{{ url_for('delete_company', company_id=c.company_id) }}" style="display:inline"
+                          onsubmit="return confirm('Delete {{ c.company_name }}?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-card">
+    <p class="empty-icon">&#127970;</p>
+    <p class="empty-title">No companies yet</p>
+    <p class="empty-sub">Add companies you're targeting in your job search.</p>
+    <a href="{{ url_for('add_company') }}" class="btn btn-primary">+ Add Company</a>
+</div>
+{% endif %}
 {% endblock %}

@@ -1,8 +1,71 @@
 {% extends "base.html" %}
+{% block title %}Saved Jobs – Job Tracker{% endblock %}
 {% block content %}
-<h2>Jobs</h2>
-<a href="/jobs/add">Add Job</a>
-{% for j in jobs %}
-<p>{{ j.job_title }}</p>
-{% endfor %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Saved Jobs</h1>
+        <p class="page-subtitle">{{ jobs | length }} position{{ 's' if jobs | length != 1 }} tracked</p>
+    </div>
+    <a href="{{ url_for('add_job') }}" class="btn btn-primary">+ Add Job</a>
+</div>
+
+{% if jobs %}
+<div class="table-card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Type</th>
+                <th>Salary Range</th>
+                <th>Date Posted</th>
+                <th>Requirements</th>
+                <th>Link</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+            <tr>
+                <td class="td-bold">{{ job.job_title }}</td>
+                <td>{{ job.company_name or '—' }}</td>
+                <td><span class="tag tag-type">{{ job.job_type or '—' }}</span></td>
+                <td>
+                    {% if job.salary_min or job.salary_max %}
+                        ${{ '%.2f' | format(job.salary_min | float) if job.salary_min else '?' }}
+                        &nbsp;-&nbsp;
+                        ${{ '%.2f' | format(job.salary_max | float) if job.salary_max else '?' }}
+                    {% else %}<span class="text-muted">Not listed</span>{% endif %}
+                </td>
+                <td>{{ job.date_posted.strftime('%Y-%m-%d') if job.date_posted else '—' }}</td>
+                <td>
+                    {% if job.requirements %}
+                        {{ job.requirements | join(', ') }}
+                    {% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+                <td>
+                    {% if job.job_url %}
+                        <a href="{{ job.job_url }}" target="_blank" class="link">View posting</a>
+                    {% else %}<span class="text-muted">—</span>{% endif %}
+                </td>
+                <td class="td-actions">
+                    <a href="{{ url_for('edit_job', job_id=job.job_id) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <form method="POST" action="{{ url_for('delete_job', job_id=job.job_id) }}" style="display:inline"
+                          onsubmit="return confirm('Delete {{ job.job_title }}? This cannot be undone.')">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-card">
+    <p class="empty-icon">&#128196;</p>
+    <p class="empty-title">No jobs saved yet</p>
+    <p class="empty-sub">Add job listings you want to apply to.</p>
+    <a href="{{ url_for('add_job') }}" class="btn btn-primary">+ Add Job</a>
+</div>
+{% endif %}
 {% endblock %}

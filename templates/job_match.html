@@ -1,8 +1,69 @@
 {% extends "base.html" %}
+{% block title %}Job Match – Job Tracker{% endblock %}
 {% block content %}
-<h2>Job Match</h2>
-<form method="post">
-<textarea name="skills"></textarea>
-<button type="submit">Match</button>
-</form>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">&#9733; Job Match</h1>
+        <p class="page-subtitle">Enter your skills to find the best-fitting jobs</p>
+    </div>
+</div>
+
+<div class="match-search-box">
+    <form method="POST" action="{{ url_for('job_match') }}">
+        <div class="form-group" style="margin-bottom: 1rem;">
+            <label for="skills">Your Skills
+                <span class="label-hint">(comma-separated: Python, SQL, Flask)</span>
+            </label>
+            <input type="text" id="skills" name="skills"
+                   value="{{ skills_input }}"
+                   placeholder="e.g. Python, SQL, Flask, HTML, CSS" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Find Matching Jobs</button>
+    </form>
+</div>
+
+{% if matches is not none %}
+    {% if matches %}
+    <p class="page-subtitle" style="margin-bottom: 1rem;">
+        Found <strong>{{ matches | length }}</strong> job{{ 's' if matches | length != 1 }} — sorted by best match
+    </p>
+    <div class="match-results">
+        {% for m in matches %}
+        {% set pct = m.match_percentage %}
+        <div class="match-card">
+            <div class="match-percent-circle {{ 'match-high' if pct >= 70 else ('match-medium' if pct >= 40 else 'match-low') }}">
+                <span class="match-pct-num">{{ pct }}</span>
+                <span class="match-pct-sign">%</span>
+            </div>
+            <div class="match-info">
+                <div class="match-title">{{ m.job_title }}</div>
+                <div class="match-company">{{ m.company_name }}</div>
+                {% if m.matched_skills %}
+                    <div class="match-label">Matched Skills</div>
+                    <div class="match-skills">
+                        {% for skill in m.matched_skills %}
+                        <span class="skill-chip matched">&#10003; {{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% if m.missing_skills %}
+                    <div class="match-label" style="margin-top:0.4rem;">Missing Skills</div>
+                    <div class="match-skills">
+                        {% for skill in m.missing_skills %}
+                        <span class="skill-chip missing">&#10007; {{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-card">
+        <p class="empty-icon">&#128269;</p>
+        <p class="empty-title">No matches found</p>
+        <p class="empty-sub">Try different skills, or <a href="{{ url_for('add_job') }}" class="link">add more jobs</a> with requirements.</p>
+    </div>
+    {% endif %}
+{% endif %}
 {% endblock %}

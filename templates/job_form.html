@@ -1,7 +1,79 @@
 {% extends "base.html" %}
+{% block title %}{{ 'Edit' if job else 'Add' }} Job – Job Tracker{% endblock %}
 {% block content %}
-<form method="post">
-<input name="job_title" placeholder="Job Title">
-<button type="submit">Save</button>
-</form>
+<div class="page-header">
+    <div>
+        <h1 class="page-title">{{ 'Edit Job' if job else 'Add Job' }}</h1>
+        <p class="page-subtitle">{{ job.job_title if job else 'Enter job listing details' }}</p>
+    </div>
+    <a href="{{ url_for('jobs') }}" class="btn btn-outline">&#8592; Back</a>
+</div>
+
+<div class="form-card">
+    <form method="POST" action="{{ url_for('edit_job', job_id=job.job_id) if job else url_for('add_job') }}">
+        <div class="form-grid">
+            <div class="form-group form-full">
+                <label for="company_id">Company</label>
+                <select id="company_id" name="company_id">
+                    <option value="">Select a company</option>
+                    {% for c in companies %}
+                    <option value="{{ c.company_id }}"
+                        {% if job and job.company_id == c.company_id %}selected{% endif %}>
+                        {{ c.company_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group form-full">
+                <label for="job_title">Job Title <span class="required">*</span></label>
+                <input type="text" id="job_title" name="job_title"
+                       value="{{ job.job_title if job else '' }}"
+                       required placeholder="e.g. Software Developer">
+            </div>
+            <div class="form-group form-full">
+                <label for="job_type">Job Type</label>
+                <select id="job_type" name="job_type">
+                    {% for jt in ['Full-time','Part-time','Contract','Internship'] %}
+                    <option value="{{ jt }}" {% if job and job.job_type == jt %}selected{% elif not job and jt == 'Full-time' %}selected{% endif %}>{{ jt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="salary_min">Minimum Salary</label>
+                <input type="number" id="salary_min" name="salary_min"
+                       value="{{ job.salary_min if job and job.salary_min else '' }}"
+                       placeholder="e.g. 70000" min="0">
+            </div>
+            <div class="form-group">
+                <label for="salary_max">Maximum Salary</label>
+                <input type="number" id="salary_max" name="salary_max"
+                       value="{{ job.salary_max if job and job.salary_max else '' }}"
+                       placeholder="e.g. 90000" min="0">
+            </div>
+            <div class="form-group form-full">
+                <label for="job_url">Job URL</label>
+                <input type="text" id="job_url" name="job_url"
+                       value="{{ job.job_url if job and job.job_url else '' }}"
+                       placeholder="https://company.com/careers/job-123">
+            </div>
+            <div class="form-group form-full">
+                <label for="date_posted">Date Posted</label>
+                <input type="date" id="date_posted" name="date_posted"
+                       value="{{ job.date_posted.strftime('%Y-%m-%d') if job and job.date_posted else '' }}">
+            </div>
+            <div class="form-group form-full">
+                <label for="requirements">Requirements
+                    <span class="label-hint">(comma-separated: Python, SQL, Flask)</span>
+                </label>
+                <input type="text" id="requirements" name="requirements"
+                       value="{{ requirements_text }}"
+                       placeholder="e.g. Python, SQL, Flask, HTML, CSS">
+            </div>
+        </div>
+        <div class="form-actions">
+            <a href="{{ url_for('jobs') }}" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary">{{ 'Save Changes' if job else 'Add Job' }}</button>
+        </div>
+    </form>
+</div>
 {% endblock %}

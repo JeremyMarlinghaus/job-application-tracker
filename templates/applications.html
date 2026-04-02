@@ -1,8 +1,53 @@
 {% extends "base.html" %}
+{% block title %}Applications – Job Tracker{% endblock %}
 {% block content %}
-<h2>Applications</h2>
-<a href="/applications/add">Add Application</a>
-{% for a in applications %}
-<p>{{ a.job_title }}</p>
-{% endfor %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Applications</h1>
+        <p class="page-subtitle">{{ applications | length }} application{{ 's' if applications | length != 1 }} logged</p>
+    </div>
+    <a href="{{ url_for('add_application') }}" class="btn btn-primary">+ Log Application</a>
+</div>
+
+{% if applications %}
+<div class="table-card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Job Title</th><th>Company</th><th>Date Applied</th>
+                <th>Status</th><th>Resume</th><th>Cover Letter</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for app in applications %}
+            <tr>
+                <td class="td-bold">{{ app.job_title or '—' }}</td>
+                <td>{{ app.company_name or '—' }}</td>
+                <td>{{ app.application_date.strftime('%Y-%m-%d') if app.application_date else '—' }}</td>
+                <td><span class="status-badge status-{{ app.status | lower }}">{{ app.status }}</span></td>
+                <td>{{ app.resume_version or '—' }}</td>
+                <td>
+                    {% if app.cover_letter_sent %}<span class="check-yes">&#10003; Yes</span>
+                    {% else %}<span class="check-no">&#10007; No</span>{% endif %}
+                </td>
+                <td class="td-actions">
+                    <a href="{{ url_for('edit_application', application_id=app.application_id) }}" class="btn btn-sm btn-primary">Edit</a>
+                    <form method="POST" action="{{ url_for('delete_application', application_id=app.application_id) }}" style="display:inline"
+                          onsubmit="return confirm('Delete this application?')">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-card">
+    <p class="empty-icon">&#128140;</p>
+    <p class="empty-title">No applications yet</p>
+    <p class="empty-sub">Start logging your job applications to track your progress.</p>
+    <a href="{{ url_for('add_application') }}" class="btn btn-primary">+ Log Application</a>
+</div>
+{% endif %}
 {% endblock %}
