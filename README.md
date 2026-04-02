@@ -40,3 +40,5 @@ What the App Does
 - Applications - Log your applications and update their status as things progress
 - Contacts - Store recruiter and hiring manager info
 - Job Match - Type in your skills and see which jobs you'd be a good fit for using our percentage calculator
+
+[![Demo](https://img.youtube.com/vi/v8NQz5xWwE4/0.jpg)](https://www.youtube.com/watch?v=v8NQz5xWwE4)
